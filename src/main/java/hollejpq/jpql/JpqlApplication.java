@@ -12,6 +12,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import jqpl.Member;
+import jqpl.Team;
 
 @SpringBootApplication
 public class JpqlApplication {
@@ -26,19 +27,28 @@ public class JpqlApplication {
 		tx.begin();
 		
 		try {
-			Member member = new Member();
-			member.setUsername("member1");
-			member.setAge(10);
-			em.persist(member);
+
+
+				Team team = new Team();
+				team.setName("teamA");
+				em.persist(team);
+				
+				Member member = new Member();
+				member.setUsername("member1");
+				member.setAge(10);
+
+				member.setTeam(team);
+
+				em.persist(member);
+			
 
 			em.flush();
 			em.clear();
 
-			List<Member> result = em.createQuery("select m from Member m", Member.class)
+			String query = "select m from Member m left join m.team t";
+			em.createQuery(query, Member.class)
 			.getResultList();
 
-			Member findMember = result.get(0);
-			findMember.setAge(20);
 
 			tx.commit();
 		} catch (Exception e) {
